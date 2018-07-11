@@ -4,9 +4,9 @@ export class CardStore {
   cards: Object = {};
   lastid = -1;
   _addCard(card: CardSchema) {
-    card.id = String(++this.lastid);
-    this.cards[card.id] = card;
-    return (card.id);
+    card._id = String(++this.lastid);
+    this.cards[card._id] = card;
+    return (card._id);
   }
 
   getCard(cardId: string) {

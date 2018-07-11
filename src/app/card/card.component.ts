@@ -11,6 +11,7 @@ export class CardComponent implements OnInit {
   constructor() { }
 
   ngOnInit() {
+    console.log(this.card);
   }
 
   dragStart(ev) {

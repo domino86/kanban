@@ -57,7 +57,7 @@ export class ListComponent implements OnInit {
     onEnter(value: string) {
         console.log(value);
         const cardId =  this.cardStore.newCard(value);
-        this.list.cards.push({id: cardId, content: value});
+        this.list.cards.push(cardId);
         console.log(this.list.cards);
 
         const data = {

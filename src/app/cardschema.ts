@@ -1,5 +1,5 @@
 export class CardSchema {
-    id: string;
+    _id: string;
     status: string;
     description: string;
 }
