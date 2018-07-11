@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
-import { CardStore } from '../CardStore';
-import { ListSchema } from '../ListSchema';
+import { CardStore } from '../cardstore';
+import { ListSchema } from '../listschema';
 
 @Component({
   selector: 'app-board',

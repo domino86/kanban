@@ -1,7 +1,9 @@
 import { Component, HostListener, Input, OnInit } from '@angular/core';
-import { CardSchema } from '../CardSchema';
-import { ListSchema } from '../ListSchema';
-import { CardStore } from '../CardStore';
+import { CardSchema } from '../cardschema';
+import { ListSchema } from '../listschema';
+import { CardStore } from '../cardstore';
+
+import { CardService } from '../shared/services/card.service';
 
 @Component({
   selector: 'app-list',
@@ -13,11 +15,13 @@ export class ListComponent implements OnInit {
   @Input() cardStore: CardStore;
   displayAddCard = false;
 
-  constructor() { }
+  constructor(private _cards: CardService) { }
   toggleDisplayAddCard() {
     this.displayAddCard = ! this.displayAddCard;
   }
+
   ngOnInit(): void {
+      this.getCards();
   }
 
   allowDrop($event) {
@@ -53,5 +57,11 @@ export class ListComponent implements OnInit {
   onEnter(value: string) {
     const cardId =  this.cardStore.newCard(value);
     this.list.cards.push(cardId);
+  }
+
+  getCards() {
+    this._cards.getCards().subscribe(data => {
+        console.log(data);
+    })
   }
 }
