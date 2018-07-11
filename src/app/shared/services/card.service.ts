@@ -19,7 +19,12 @@ export class CardService {
     }
 
     getCards() {
-        return this._http.get(`${this.uri}/boards`, httpOptions);
+        return this._http.get(`${this.uri}/todos`, httpOptions);
+    }
+
+    addCard(data) {
+        console.log(data);
+        return this._http.post(`${this.uri}/todos`, data, httpOptions);
     }
 
 }

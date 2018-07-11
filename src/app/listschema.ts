@@ -1,4 +1,5 @@
 export class ListSchema {
-  name: string;
-  cards: string[];
+    name: string;
+    status: string;
+    cards: object[]
 }
