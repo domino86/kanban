@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit } from '@angular/core';
+import { Component, HostListener, Input, OnInit, EventEmitter } from '@angular/core';
 import { CardSchema } from '../cardschema';
 import { ListSchema } from '../listschema';
 import { CardStore } from '../cardstore';
@@ -14,9 +14,11 @@ export class ListComponent implements OnInit {
     @Input() list: ListSchema;
     @Input() cardStore: CardStore;
     displayAddCard = false;
-    statusOnDrag: string;
 
-    constructor(private _card: CardService) { }
+    constructor(private _card: CardService) {
+
+    }
+
     toggleDisplayAddCard() {
         this.displayAddCard = ! this.displayAddCard;
     }
@@ -54,27 +56,26 @@ export class ListComponent implements OnInit {
             target.appendChild(document.getElementById(data));
         }
 
-        let status = target.parentNode.children[0].getAttribute('status');
-        let description = document.getElementById(data).textContent;
-        let newData = {
+        const status = target.parentNode.children[0].getAttribute('status');
+        const description = document.getElementById(data).textContent;
+        const newData = {
             _id: data,
             status: status,
             description: description
         };
         console.log(newData);
 
-        this.statusOnDrag = status;
+        this._card.changeMessage(newData);
 
         console.log(newData);
-        this._card.updateCard(newData).subscribe(data => {
-            // this.list.cards.forEach((card, index) => {
-            //     if (newData._id === card['_id']) {
-            //         this.list.cards[index]['_id'] = newData._id;
-            //         this.list.cards[index]['status'] = newData.status;
-            //         this.list.cards[index]['description'] = newData.description;
-            //     }
-            // });
-            console.log(data);
+        this._card.updateCard(newData).subscribe(() => {
+            this.list.cards.forEach((card, index) => {
+                if (newData._id === card['_id']) {
+                    this.list.cards[index]['_id'] = newData._id;
+                    this.list.cards[index]['status'] = newData.status;
+                    this.list.cards[index]['description'] = newData.description;
+                }
+            });
             // TODO update card
         });
 
@@ -94,12 +95,16 @@ export class ListComponent implements OnInit {
 
     deleteCard(id) {
         console.log(id);
-        this.list.cards.forEach((card, index) => {
-            if (card['_id'] === id) {
-                this.list.cards.splice(index, 1);
-            }
-        });
+        const findStatus = this.list.cards.filter(item => item._id === id);
+        console.log(findStatus);
         console.log(this.list.cards);
+
+        this._card.deleteCard(id).subscribe(response => {
+            this.list.cards = findStatus.filter(item => item.id !== id);
+            }, (error) => {
+            console.log(error);
+        })
+
     }
 
 

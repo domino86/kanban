@@ -1,6 +1,7 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpHeaders, HttpParams } from '@angular/common/http';
 import { AppConfig } from '../../app.config';
+import { BehaviorSubject } from 'rxjs/internal/BehaviorSubject';
 
 const httpOptions = {
     headers: new HttpHeaders({ 'Content-Type': 'application/json' })
@@ -10,6 +11,9 @@ const httpOptions = {
 export class CardService {
 
     uri: string;
+    private messageSource = new BehaviorSubject({_id: '', status: '', description: ''});
+    currentMessage = this.messageSource.asObservable();
+
 
     constructor(private _http: HttpClient,
                 private _config: AppConfig
@@ -34,6 +38,10 @@ export class CardService {
 
     deleteCard(id) {
         return this._http.delete(`${this.uri}/todos/${id}`, httpOptions);
+    }
+
+    changeMessage(message) {
+        this.messageSource.next(message)
     }
 
 }

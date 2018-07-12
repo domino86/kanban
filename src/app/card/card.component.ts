@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, ElementRef, ViewChild, EventEmitter, Output } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, ElementRef, ViewChild, Output, EventEmitter, SimpleChanges } from '@angular/core';
 import { CardSchema } from '../cardschema';
 
 import { CardService } from '../shared/services/card.service';
@@ -10,7 +10,6 @@ import { CardService } from '../shared/services/card.service';
 })
 export class CardComponent implements OnInit, OnChanges {
     @Input() card: CardSchema;
-    @Input() statusOnDrag: string;
     @Output() deletedCard: EventEmitter<any>;
     @ViewChild('editCardInput') cardInput: ElementRef;
     editable: boolean;
@@ -21,11 +20,17 @@ export class CardComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
+        console.log(this.card);
+        this._card.currentMessage.subscribe(newData => {
+            console.log(newData);
+            if (typeof(newData) !== 'undefined' && this.card._id === newData._id) {
+                this.card.status = newData.status;
+            }
+        });
     }
 
-    ngOnChanges(changes: any) {
-        console.log(changes.statusOnDrag.currentValue);
-        this.statusOnDrag = changes.statusOnDrag.currentValue;
+    ngOnChanges() {
+
     }
 
     dragStart(ev) {
@@ -40,20 +45,14 @@ export class CardComponent implements OnInit, OnChanges {
     deleteCard(event) {
         console.log(event);
         const id = event.target.parentElement.id;
-        this._card.deleteCard(id).subscribe(response => {
-            console.log(response);
-            this.deletedCard.emit(id);
-        }, (error) => {
-             console.log(error);
-        });
+        this.deletedCard.emit(id);
     }
 
     onEnter(value: string) {
-        console.log(this.statusOnDrag);
         if (value !== '') {
             const data = {
                 _id: this.card._id,
-                status: this.statusOnDrag,
+                status: this.card.status,
                 description: value
             };
             console.log(data);

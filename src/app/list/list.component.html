@@ -3,7 +3,6 @@
     <div class="cards">
         <app-card *ngFor="let cardId of list.cards"
                   [card]="cardId"
-                  [statusOnDrag]="statusOnDrag"
                   (deletedCard)="deleteCard($event)"
         ></app-card>
     </div>

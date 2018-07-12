@@ -1,5 +1,5 @@
 export class ListSchema {
     name: string;
     status: string;
-    cards: object[]
+    cards: any
 }
