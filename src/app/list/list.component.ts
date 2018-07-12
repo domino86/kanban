@@ -8,7 +8,7 @@ import { CardService } from '../shared/services/card.service';
 @Component({
     selector: 'app-list',
     templateUrl: './list.component.html',
-    styleUrls: ['./list.component.css']
+    styleUrls: ['./list.component.scss']
 })
 export class ListComponent implements OnInit {
     @Input() list: ListSchema;
@@ -40,7 +40,7 @@ export class ListComponent implements OnInit {
         }
 
         target = target.querySelector('.cards');
-        console.log(target.parentNode.children[0].getAttribute('status'));
+
         let status = target.parentNode.children[0].getAttribute('status');
         let description = document.getElementById(data).textContent;
         let newData = {
@@ -51,7 +51,7 @@ export class ListComponent implements OnInit {
 
         this._card.updateCard(newData).subscribe(data => {
             console.log(data);
-        })
+        });
 
         if (targetClassName === 'card') {
             $event.target.parentNode.insertBefore(document.getElementById(data), $event.target);
@@ -69,7 +69,6 @@ export class ListComponent implements OnInit {
 
     onEnter(value: string) {
         console.log(value);
-        const cardId =  this.cardStore.newCard(value);
         console.log(this.list.cards);
 
         const data = {
@@ -82,13 +81,11 @@ export class ListComponent implements OnInit {
     }
 
     updateCard(event) {
-        console.log(event);
         this.list.cards.forEach((card, index) => {
             if (card['_id'] === event._id) {
                 this.list.cards[index] = event;
             }
         });
-        console.log(this.list.cards);
     }
 
     deleteCard(id) {

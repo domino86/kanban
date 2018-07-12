@@ -6,7 +6,7 @@ import { CardService } from '../shared/services/card.service';
 @Component({
     selector: 'app-card',
     templateUrl: './card.component.html',
-    styleUrls: ['./card.component.css']
+    styleUrls: ['./card.component.scss']
 })
 export class CardComponent implements OnInit {
     @Input() card: CardSchema;
@@ -35,10 +35,12 @@ export class CardComponent implements OnInit {
 
     deleteCard(event) {
         console.log(event);
-        const id = event.target.parentNode.id;
+        const id = event.target.parentElement.id;
         this._card.deleteCard(id).subscribe(response => {
             console.log(response);
             this.deletedCard.emit(id);
+        }, (error) => {
+             console.log(error);
         });
     }
 
