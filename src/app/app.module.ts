@@ -1,6 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { HttpClientModule } from '@angular/common/http';
+import { AngularFontAwesomeModule } from 'angular-font-awesome';
 
 import { AppComponent } from './app.component';
 import { BoardComponent } from './board/board.component';
@@ -18,8 +19,9 @@ import { CardService } from './shared/services/card.service';
         ListComponent
     ],
     imports: [
+        BrowserModule,
         HttpClientModule,
-        BrowserModule
+        AngularFontAwesomeModule
     ],
     providers: [
         AppConfig,

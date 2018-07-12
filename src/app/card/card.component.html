@@ -1,3 +1,17 @@
-<p class="card" draggable="true" (dragstart)="dragStart($event)" id="{{card._id}}">
- {{card.description}}
-</p>
+<div class="card"
+   draggable="true"
+   (dragstart)="dragStart($event)"
+   id="{{card._id}}">
+    <p *ngIf="!editable" (click)="editCard($event)">{{card.description}}</p>
+    <input #editCardInput
+           [hidden]="!editable"
+           (keyup.enter)="onEnter(editCardInput.value)"
+           type="text">
+    <button *ngIf="editable" type="button" class="close" aria-label="Close" (click)="editable = false">
+        <span aria-hidden="true">&times;</span>
+    </button>
+    <i *ngIf="editable" class="fa fa-check" aria-hidden="true" (click)="onEnter(editCardInput.value)"></i>
+    <i class="fa fa-trash-o" aria-hidden="true" (click)="deleteCard($event)"></i>
+</div>
+
+

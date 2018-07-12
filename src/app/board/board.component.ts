@@ -13,9 +13,15 @@ export class BoardComponent implements OnInit {
     cardStore: CardStore;
     lists: ListSchema[];
     ready: boolean;
+
     constructor(private _card: CardService) {
         this.ready = false;
     }
+
+    ngOnInit() {
+        this.getBoards();
+    }
+
     setMockData(): void {
         this.cardStore = new CardStore();
         const lists: ListSchema[] = [
@@ -38,27 +44,22 @@ export class BoardComponent implements OnInit {
         this.lists = lists;
     }
 
-    ngOnInit() {
-        this.getBoards();
-    }
-
     getBoards() {
         this.setMockData();
         this._card.getCards().subscribe(data => {
-            console.log(data);
             const response = data;
             if (response['data'].hasOwnProperty('docs')) {
-                response['data'].docs.forEach(listResponse => {
-                    console.log(listResponse);
+                response['data'].docs.forEach((listResponse, index) => {
+                    // TODO nicer than second loop
                     for (let list in this.lists) {
-                        console.log(this.lists[list]);
-                        console.log(list);
                         if (listResponse['status'] === this.lists[list].status) {
                             this.lists[list].cards.push(listResponse);
+                            if (index === response['data'].docs.length - 1) {
+                                this.ready = true;
+                            }
                         }
                     }
                 })
-                console.log(this.lists);
             }
         })
     }

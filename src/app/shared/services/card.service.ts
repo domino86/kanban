@@ -27,6 +27,15 @@ export class CardService {
         return this._http.post(`${this.uri}/todos`, data, httpOptions);
     }
 
+    updateCard(data) {
+        console.log(data);
+        return this._http.put(`${this.uri}/todos`, data, httpOptions);
+    }
+
+    deleteCard(id) {
+        return this._http.delete(`${this.uri}/todos/${id}`, httpOptions);
+    }
+
 }
 
 
