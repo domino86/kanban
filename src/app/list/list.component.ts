@@ -14,6 +14,7 @@ export class ListComponent implements OnInit {
     @Input() list: ListSchema;
     @Input() cardStore: CardStore;
     displayAddCard = false;
+    statusOnDrag: string;
 
     constructor(private _card: CardService) { }
     toggleDisplayAddCard() {
@@ -41,18 +42,6 @@ export class ListComponent implements OnInit {
 
         target = target.querySelector('.cards');
 
-        let status = target.parentNode.children[0].getAttribute('status');
-        let description = document.getElementById(data).textContent;
-        let newData = {
-            _id: data,
-            status: status,
-            description: description
-        };
-
-        this._card.updateCard(newData).subscribe(data => {
-            console.log(data);
-        });
-
         if (targetClassName === 'card') {
             $event.target.parentNode.insertBefore(document.getElementById(data), $event.target);
         } else if (targetClassName === 'list__title') {
@@ -65,27 +54,42 @@ export class ListComponent implements OnInit {
             target.appendChild(document.getElementById(data));
         }
 
+        let status = target.parentNode.children[0].getAttribute('status');
+        let description = document.getElementById(data).textContent;
+        let newData = {
+            _id: data,
+            status: status,
+            description: description
+        };
+        console.log(newData);
+
+        this.statusOnDrag = status;
+
+        console.log(newData);
+        this._card.updateCard(newData).subscribe(data => {
+            // this.list.cards.forEach((card, index) => {
+            //     if (newData._id === card['_id']) {
+            //         this.list.cards[index]['_id'] = newData._id;
+            //         this.list.cards[index]['status'] = newData.status;
+            //         this.list.cards[index]['description'] = newData.description;
+            //     }
+            // });
+            console.log(data);
+            // TODO update card
+        });
+
     }
 
     onEnter(value: string) {
-        console.log(value);
-        console.log(this.list.cards);
-
-        const data = {
-            status: this.list.status,
-            description: value
-        };
-        this._card.addCard(data).subscribe(response => {
-            this.list.cards.push(response['data']);
-        });
-    }
-
-    updateCard(event) {
-        this.list.cards.forEach((card, index) => {
-            if (card['_id'] === event._id) {
-                this.list.cards[index] = event;
-            }
-        });
+        if (value !== '') {
+            const data = {
+                status: this.list.status,
+                description: value
+            };
+            this._card.addCard(data).subscribe(response => {
+                this.list.cards.push(response['data']);
+            });
+        }
     }
 
     deleteCard(id) {

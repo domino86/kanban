@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, ElementRef, ViewChild, EventEmitter, Output } from '@angular/core';
+import { Component, Input, OnInit, OnChanges, ElementRef, ViewChild, EventEmitter, Output } from '@angular/core';
 import { CardSchema } from '../cardschema';
 
 import { CardService } from '../shared/services/card.service';
@@ -8,20 +8,24 @@ import { CardService } from '../shared/services/card.service';
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.scss']
 })
-export class CardComponent implements OnInit {
+export class CardComponent implements OnInit, OnChanges {
     @Input() card: CardSchema;
-    @Output() updatedCard: EventEmitter<any>;
+    @Input() statusOnDrag: string;
     @Output() deletedCard: EventEmitter<any>;
     @ViewChild('editCardInput') cardInput: ElementRef;
     editable: boolean;
 
     constructor(private _card: CardService) {
         this.editable = false;
-        this.updatedCard = new EventEmitter<any>();
         this.deletedCard = new EventEmitter<any>();
     }
 
     ngOnInit() {
+    }
+
+    ngOnChanges(changes: any) {
+        console.log(changes.statusOnDrag.currentValue);
+        this.statusOnDrag = changes.statusOnDrag.currentValue;
     }
 
     dragStart(ev) {
@@ -45,16 +49,22 @@ export class CardComponent implements OnInit {
     }
 
     onEnter(value: string) {
-        const data = {
-            _id: this.card._id,
-            status: this.card.status,
-            description: value
-        };
-        this._card.updateCard(data).subscribe(response => {
-            console.log(response);
-            this.editable = false;
-            this.updatedCard.emit(data);
-        });
+        console.log(this.statusOnDrag);
+        if (value !== '') {
+            const data = {
+                _id: this.card._id,
+                status: this.statusOnDrag,
+                description: value
+            };
+            console.log(data);
+            this._card.updateCard(data).subscribe(response => {
+                console.log(response);
+                this.editable = false;
+                this.card = data;
+            });
+        } else {
+            this.editable = true;
+        }
     }
 
 }
