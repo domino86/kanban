@@ -1,27 +1,40 @@
 .card {
-	p {
-		background: white;
-		margin: 0 0 6px 0;
-		padding: 6px 50px 2px 8px;
-		cursor: pointer;
-	}
-
-	&__input {
-        padding-right: 100px;
-	}
+	background: white;
+	margin: 0 0 6px 0;
+	padding: 6px 50px 2px 8px;
+	cursor: pointer;
 
 	&__submit {
 		right: 50px;
-		top: 3px;
+		top: 8px;
 	}
 
 	&__delete {
 		right: 5px;
-		top: 3px;
+		top: 8px;
 	}
 
 	&__close {
 		right: 5px;
-		top: 3px;
+		top: 8px;
+	}
+}
+
+.editable {
+	position: relative;
+
+	&__textarea {
+		width: 100%;
+		padding-right: 100px;
+	}
+
+	&__submit {
+		right: 50px;
+		top: 8px;
+	}
+
+	&__close {
+		right: 5px;
+		top: 8px;
 	}
 }

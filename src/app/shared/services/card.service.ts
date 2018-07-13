@@ -26,6 +26,10 @@ export class CardService {
         return this._http.get(`${this.uri}/todos`, httpOptions);
     }
 
+    getCard(id) {
+        return this._http.get(`${this.uri}/todos/${id}`, httpOptions);
+    }
+
     addCard(data) {
         console.log(data);
         return this._http.post(`${this.uri}/todos`, data, httpOptions);

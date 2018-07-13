@@ -1,4 +1,4 @@
-import { Component, HostListener, Input, OnInit, EventEmitter } from '@angular/core';
+import { Component, Input, OnInit } from '@angular/core';
 import { CardSchema } from '../cardschema';
 import { ListSchema } from '../listschema';
 import { CardStore } from '../cardstore';
@@ -14,10 +14,9 @@ export class ListComponent implements OnInit {
     @Input() list: ListSchema;
     @Input() cardStore: CardStore;
     displayAddCard = false;
+    loading = false;
 
-    constructor(private _card: CardService) {
-
-    }
+    constructor(private _card: CardService) { }
 
     toggleDisplayAddCard() {
         this.displayAddCard = ! this.displayAddCard;
@@ -33,10 +32,12 @@ export class ListComponent implements OnInit {
 
     drop($event) {
         $event.preventDefault();
+        this.loading = true;
         const data = $event.dataTransfer.getData('card');
 
         let target = $event.target;
-        const targetClassName = target.className;
+        const targetClassName = target.classList[0];
+        console.log(targetClassName);
 
         while (target.classList[0] !== 'list') {
             target = target.parentNode;
@@ -45,49 +46,59 @@ export class ListComponent implements OnInit {
         target = target.querySelector('.cards');
 
         if (targetClassName === 'card') {
-            $event.target.parentNode.insertBefore(document.getElementById(data), $event.target);
+            console.log('card');
+            $event.target.parentNode.parentNode.insertBefore(document.getElementById(data), $event.target.parentNode);
         } else if (targetClassName === 'list__title') {
             if (target.children.length) {
+                console.log('first');
                 target.insertBefore(document.getElementById(data), target.children[0]);
             } else {
+                console.log('at the end');
                 target.appendChild(document.getElementById(data));
             }
         } else {
             target.appendChild(document.getElementById(data));
         }
 
+        const cards = target.children as HTMLCollection;
+        let index = 0;
+
+        for (let i = 0; i < cards.length; i++) {
+            if (cards[i].getAttribute('id') === data) {
+                console.log(i);
+                index = i;
+            }
+        }
+
         const status = target.parentNode.children[0].getAttribute('status');
-        const description = document.getElementById(data).textContent;
+        const description = document.getElementById(data).textContent.trim();
         const newData = {
             _id: data,
             status: status,
-            description: description
+            description: description,
+            sort: index
         };
 
         this._card.changeMessage(newData);
-        this._card.updateCard(newData).subscribe(() => {});
+        this._card.updateCard(newData).subscribe(response => {
+            this.loading = false
+        });
 
     }
 
     onEnter(value: string) {
         if (value !== '') {
+            this.loading = true;
             const data = {
                 status: this.list.status,
-                description: value
+                description: value,
+                sort: 0
             };
             this._card.addCard(data).subscribe(response => {
                 this.list.cards.push(response['data']);
+                this.loading = false;
             });
         }
-    }
-
-    deleteCard(id) {
-        this._card.deleteCard(id).subscribe(() => {
-            document.getElementById(id).remove();
-        }, (error) => {
-            console.log(error);
-        })
-
     }
 
 

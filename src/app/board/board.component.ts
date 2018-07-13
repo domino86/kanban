@@ -54,11 +54,9 @@ export class BoardComponent implements OnInit {
                     for (let list in this.lists) {
                         if (listResponse['status'] === this.lists[list].status) {
                             this.lists[list].cards.push(listResponse);
-                            if (index === response['data'].docs.length - 1) {
-                                this.ready = true;
-                            }
                         }
                     }
+                    this.ready = true;
                 })
             }
         })

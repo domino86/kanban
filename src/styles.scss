@@ -8,3 +8,13 @@
     cursor: pointer;
   }
 }
+
+.custom-loader {
+  position: absolute;
+  z-index: 10999;
+  top: 0;
+  left: 0;
+  background: url('assets/icons/loader.svg') rgba(0, 0, 0, 0.2) no-repeat center center;
+  width: 100%;
+  height: 100%;
+}

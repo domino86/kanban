@@ -1,6 +1,7 @@
 <div class="container-fluid board">
     <h1 class="text-center text-muted p-2">Simple board app</h1>
-    <div class="row">
+    <div class="row position-relative">
+        <div class="custom-loader rounded" *ngIf="!ready"></div>
         <app-list *ngFor="let list of lists"
                   class="col-md-4 col-xs-12"
                   [list]="list"

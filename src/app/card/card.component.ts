@@ -1,4 +1,4 @@
-import { Component, Input, OnInit, OnChanges, ElementRef, ViewChild, Output, EventEmitter, SimpleChanges } from '@angular/core';
+import { Component, Input, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CardSchema } from '../cardschema';
 
 import { CardService } from '../shared/services/card.service';
@@ -8,15 +8,15 @@ import { CardService } from '../shared/services/card.service';
     templateUrl: './card.component.html',
     styleUrls: ['./card.component.scss']
 })
-export class CardComponent implements OnInit, OnChanges {
+export class CardComponent implements OnInit {
     @Input() card: CardSchema;
-    @Output() deletedCard: EventEmitter<any>;
+    @Input() index: number;
     @ViewChild('editCardInput') cardInput: ElementRef;
     editable: boolean;
+    loading = false;
 
     constructor(private _card: CardService) {
         this.editable = false;
-        this.deletedCard = new EventEmitter<any>();
     }
 
     ngOnInit() {
@@ -27,38 +27,78 @@ export class CardComponent implements OnInit, OnChanges {
         });
     }
 
-    ngOnChanges() {
-
-    }
-
     dragStart(ev) {
         ev.dataTransfer.setData('card', ev.target.id);
+        this.checkExists(ev.target.id, (status) => {
+            console.log(status);
+            if (status === 404) {
+                return false;
+            }
+        });
+    }
+
+    toggleDrag(check: boolean) {
+        this.cardInput.nativeElement.parentNode.parentNode.setAttribute('draggable', check);
     }
 
     editCard(event) {
+        event.preventDefault();
+        console.log(event.target);
         this.editable = true;
-        this.cardInput.nativeElement.value = this.card.description = event.target.textContent;
+        this.cardInput.nativeElement.value = this.card.description;
+        this.toggleDrag(false);
     }
 
-    deleteCard(event) {
-        const id = event.target.parentElement.id;
-        this.deletedCard.emit(id);
+    closeCard(event) {
+        event.stopPropagation();
+        this.editable = false;
+        this.cardInput.nativeElement.parentNode.parentNode.setAttribute('draggable', true);
+        this.toggleDrag(true);
+    }
+
+    deleteCard(id) {
+        this.loading = true;
+        this._card.deleteCard(id).subscribe(() => {
+            if (document.getElementById(id)) {
+                document.getElementById(id).remove();
+                this.toggleDrag(true);
+                this.loading = false;
+            }
+        }, () => {
+            this.toggleDrag(true);
+            this.loading = false;
+        })
+    }
+
+    checkExists(id, callback) {
+        this._card.getCard(id).subscribe(card => {
+            callback(card['status']);
+        }, (error) => {
+            callback(error['status']);
+        });
     }
 
     onEnter(value: string) {
+        this.loading = true;
         if (value !== '') {
             const data = {
                 _id: this.card._id,
                 status: this.card.status,
                 description: value
             };
-            this._card.updateCard(data).subscribe(response => {
+
+            this._card.updateCard(data).subscribe(() => {
                 this.editable = false;
                 this.card = data;
+                this.loading = false;
             });
+
         } else {
             this.editable = true;
+            this.loading = false;
         }
+
+        this.toggleDrag(true);
     }
 
 }
