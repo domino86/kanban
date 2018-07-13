@@ -24,7 +24,7 @@ export class ListComponent implements OnInit {
     }
 
     ngOnInit(): void {
-        console.log(this.list.cards);
+        console.log(this.list);
     }
 
     allowDrop($event) {
@@ -38,7 +38,7 @@ export class ListComponent implements OnInit {
         let target = $event.target;
         const targetClassName = target.className;
 
-        while (target.className !== 'list') {
+        while (target.classList[0] !== 'list') {
             target = target.parentNode;
         }
 
@@ -63,21 +63,9 @@ export class ListComponent implements OnInit {
             status: status,
             description: description
         };
-        console.log(newData);
 
         this._card.changeMessage(newData);
-
-        console.log(newData);
-        this._card.updateCard(newData).subscribe(() => {
-            this.list.cards.forEach((card, index) => {
-                if (newData._id === card['_id']) {
-                    this.list.cards[index]['_id'] = newData._id;
-                    this.list.cards[index]['status'] = newData.status;
-                    this.list.cards[index]['description'] = newData.description;
-                }
-            });
-            // TODO update card
-        });
+        this._card.updateCard(newData).subscribe(() => {});
 
     }
 
@@ -94,14 +82,9 @@ export class ListComponent implements OnInit {
     }
 
     deleteCard(id) {
-        console.log(id);
-        const findStatus = this.list.cards.filter(item => item._id === id);
-        console.log(findStatus);
-        console.log(this.list.cards);
-
-        this._card.deleteCard(id).subscribe(response => {
-            this.list.cards = findStatus.filter(item => item.id !== id);
-            }, (error) => {
+        this._card.deleteCard(id).subscribe(() => {
+            document.getElementById(id).remove();
+        }, (error) => {
             console.log(error);
         })
 

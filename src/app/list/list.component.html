@@ -1,4 +1,4 @@
-<div class="list" (dragover)="allowDrop($event)" (drop)="drop($event)">
+<div class="list rounded" (dragover)="allowDrop($event)" (drop)="drop($event)">
     <p class="list__title p-1"[attr.status]="list.status"><strong>{{list.name}}</strong></p>
     <div class="cards">
         <app-card *ngFor="let cardId of list.cards"

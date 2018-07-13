@@ -20,11 +20,9 @@ export class CardComponent implements OnInit, OnChanges {
     }
 
     ngOnInit() {
-        console.log(this.card);
         this._card.currentMessage.subscribe(newData => {
-            console.log(newData);
             if (typeof(newData) !== 'undefined' && this.card._id === newData._id) {
-                this.card.status = newData.status;
+                this.card = newData;
             }
         });
     }
@@ -43,7 +41,6 @@ export class CardComponent implements OnInit, OnChanges {
     }
 
     deleteCard(event) {
-        console.log(event);
         const id = event.target.parentElement.id;
         this.deletedCard.emit(id);
     }
@@ -55,9 +52,7 @@ export class CardComponent implements OnInit, OnChanges {
                 status: this.card.status,
                 description: value
             };
-            console.log(data);
             this._card.updateCard(data).subscribe(response => {
-                console.log(response);
                 this.editable = false;
                 this.card = data;
             });
