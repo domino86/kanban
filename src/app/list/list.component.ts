@@ -37,17 +37,28 @@ export class ListComponent implements OnInit {
 
         let target = $event.target;
         const targetClassName = target.classList[0];
-        console.log(targetClassName);
-
         while (target.classList[0] !== 'list') {
             target = target.parentNode;
         }
 
         target = target.querySelector('.cards');
+        const dragEl = document.getElementById(data);
+        let currentIndex = Number(document.getElementById(data).getAttribute('data-sort'));
 
         if (targetClassName === 'card') {
             console.log('card');
-            $event.target.parentNode.parentNode.insertBefore(document.getElementById(data), $event.target.parentNode);
+            console.log($event.target);
+            console.log(dragEl);
+            if (this.isBefore(dragEl, $event.target.parentNode)) {
+                console.log('yes');
+                $event.target.parentNode.parentNode.insertBefore(dragEl, $event.target.parentNode);
+                currentIndex += 1;
+            } else {
+                console.log('no');
+                $event.target.parentNode.parentNode.insertBefore(dragEl, $event.target.parentNode.nextSibling);
+                currentIndex -= 1;
+            }
+
         } else if (targetClassName === 'list__title') {
             if (target.children.length) {
                 console.log('first');
@@ -63,29 +74,38 @@ export class ListComponent implements OnInit {
 
         const status = target.parentNode.children[0].getAttribute('status');
         const description = document.getElementById(data).textContent.trim();
-        let currentIndex = Number(document.getElementById(data).getAttribute('data-sort'));
+
         console.log(currentIndex);
 
-        let newData = {
+        const newData = {
             _id: data,
             status: status,
             description: description,
             sort: currentIndex
         };
 
-        let iterateTarget = target.children;
+
+        const iterateTarget = target.children;
 
         for (let i = 0; i < iterateTarget.length; i++) {
             newData.sort = i;
-            iterateTarget[i].setAttribute('data-sort', i);
-            console.log(iterateTarget[i]);
         }
-
         this._card.changeMessage(newData);
         this._card.updateCard(newData).subscribe(response => {
             this.loading = false
         });
 
+    }
+
+    isBefore(firstNode, secondNode): boolean {
+        if (firstNode.parentNode === secondNode.parentNode) {
+            for (let cur = firstNode; cur; cur = cur.previousSibling) {
+                if (cur === secondNode) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     onEnter(value: string) {

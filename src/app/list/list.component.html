@@ -2,9 +2,8 @@
     <div class="custom-loader rounded" *ngIf="loading"></div>
     <p class="list__title p-1" [attr.status]="list.status"><strong>{{list.name}}</strong></p>
     <div class="cards">
-        <app-card *ngFor="let cardId of list.cards; let i=index"
-                  [card]="cardId" [index]="i"
-        ></app-card>
+        <app-card *ngFor="let cardId of list.cards; let i=index" [attr.data-sort]="i"
+                  [card]="cardId" [index]="i"></app-card>
     </div>
 
     <input #addCardInput

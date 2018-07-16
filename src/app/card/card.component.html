@@ -2,11 +2,12 @@
      draggable="true"
      (mousedown)="checkExists(card._id)"
      (dragstart)="status && dragStart($event)"
+     [attr.data-sort]="index"
      id="{{card._id}}">
     <div class="custom-loader rounded" *ngIf="loading"></div>
 
-    <div class="card bg-light mb-2 pt-3 pb-3 pl-3"
-         *ngIf="!editable"
+    <div class="card bg-light mb-2 pt-3 pb-3 pl-3 pr-5"
+         [hidden]="editable"
          (click)="editCard($event)">
 
         {{card.description}}
