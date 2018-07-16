@@ -58,6 +58,9 @@ export class BoardComponent implements OnInit {
                     }
                     this.ready = true;
                 })
+                if (response['data']['docs'].length === 0) {
+                    this.ready = true;
+                }
             }
         })
     }

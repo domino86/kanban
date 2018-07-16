@@ -1,6 +1,7 @@
 <div #cardRef
      draggable="true"
-     (dragstart)="dragStart($event)"
+     (mousedown)="checkExists(card._id)"
+     (dragstart)="status && dragStart($event)"
      id="{{card._id}}">
     <div class="custom-loader rounded" *ngIf="loading"></div>
 
@@ -16,6 +17,7 @@
                 (click)="deleteCard(card._id)">
             <i class="fa fa-trash-o" aria-hidden="true"></i>
         </button>
+        <p class="alert alert-danger" *ngIf="!status">This element doesn't exists, please refresh site.</p>
     </div>
 
     <div class="editable">
@@ -42,7 +44,6 @@
                aria-hidden="true"></i>
         </button>
     </div>
-
 </div>
 
 

@@ -12,12 +12,11 @@ export class CardComponent implements OnInit {
     @Input() card: CardSchema;
     @Input() index: number;
     @ViewChild('editCardInput') cardInput: ElementRef;
-    editable: boolean;
+    editable = false;
     loading = false;
+    status = true;
 
-    constructor(private _card: CardService) {
-        this.editable = false;
-    }
+    constructor(private _card: CardService) { }
 
     ngOnInit() {
         this._card.currentMessage.subscribe(newData => {
@@ -29,12 +28,6 @@ export class CardComponent implements OnInit {
 
     dragStart(ev) {
         ev.dataTransfer.setData('card', ev.target.id);
-        this.checkExists(ev.target.id, (status) => {
-            console.log(status);
-            if (status === 404) {
-                return false;
-            }
-        });
     }
 
     toggleDrag(check: boolean) {
@@ -70,11 +63,11 @@ export class CardComponent implements OnInit {
         })
     }
 
-    checkExists(id, callback) {
-        this._card.getCard(id).subscribe(card => {
-            callback(card['status']);
-        }, (error) => {
-            callback(error['status']);
+    checkExists(id) {
+        this._card.getCard(id).subscribe(() => {
+            this.status = true;
+        }, () => {
+            this.status = false;
         });
     }
 

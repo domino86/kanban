@@ -60,24 +60,26 @@ export class ListComponent implements OnInit {
             target.appendChild(document.getElementById(data));
         }
 
-        const cards = target.children as HTMLCollection;
-        let index = 0;
-
-        for (let i = 0; i < cards.length; i++) {
-            if (cards[i].getAttribute('id') === data) {
-                console.log(i);
-                index = i;
-            }
-        }
 
         const status = target.parentNode.children[0].getAttribute('status');
         const description = document.getElementById(data).textContent.trim();
-        const newData = {
+        let currentIndex = Number(document.getElementById(data).getAttribute('data-sort'));
+        console.log(currentIndex);
+
+        let newData = {
             _id: data,
             status: status,
             description: description,
-            sort: index
+            sort: currentIndex
         };
+
+        let iterateTarget = target.children;
+
+        for (let i = 0; i < iterateTarget.length; i++) {
+            newData.sort = i;
+            iterateTarget[i].setAttribute('data-sort', i);
+            console.log(iterateTarget[i]);
+        }
 
         this._card.changeMessage(newData);
         this._card.updateCard(newData).subscribe(response => {
