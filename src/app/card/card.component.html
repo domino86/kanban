@@ -25,7 +25,7 @@
         <textarea #editCardInput
                   [hidden]="!editable"
                   (keyup.enter)="onEnter(editCardInput.value)"
-                  (click)="$event.preventDefault();"
+                  (click)="$event.preventDefault()"
                   class="editable__textarea pt-2 pb-2 pl-2" type="text"></textarea>
 
         <button *ngIf="editable"

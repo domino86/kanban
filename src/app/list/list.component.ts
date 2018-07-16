@@ -75,8 +75,6 @@ export class ListComponent implements OnInit {
         const status = target.parentNode.children[0].getAttribute('status');
         const description = document.getElementById(data).textContent.trim();
 
-        console.log(currentIndex);
-
         const newData = {
             _id: data,
             status: status,
@@ -84,12 +82,17 @@ export class ListComponent implements OnInit {
             sort: currentIndex
         };
 
-
+        // this solution or above?
         const iterateTarget = target.children;
+        console.log(iterateTarget);
 
         for (let i = 0; i < iterateTarget.length; i++) {
-            newData.sort = i;
+            if (data === iterateTarget[i].getAttribute('id')) {
+                console.log(i);
+                newData.sort = i;
+            }
         }
+
         this._card.changeMessage(newData);
         this._card.updateCard(newData).subscribe(response => {
             this.loading = false

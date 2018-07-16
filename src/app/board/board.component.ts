@@ -51,7 +51,7 @@ export class BoardComponent implements OnInit {
             if (response['data'].hasOwnProperty('docs')) {
                 response['data'].docs.forEach((listResponse, index) => {
                     // TODO nicer than second loop
-                    for (let list in this.lists) {
+                    for (const list in this.lists) {
                         if (listResponse['status'] === this.lists[list].status) {
                             this.lists[list].cards.push(listResponse);
                         }
