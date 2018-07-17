@@ -19,9 +19,15 @@ module.exports = function (config) {
       dir: require('path').join(__dirname, 'coverage'), reports: [ 'html', 'lcovonly' ],
       fixWebpackSourcePaths: true
     },
-    
+
     reporters: ['progress', 'kjhtml'],
     port: 9876,
+    proxies: {
+      '/api': {
+        'target': 'http://localhost:3000/api',
+        'changeOrigin': true
+      }
+    },
     colors: true,
     logLevel: config.LOG_INFO,
     autoWatch: true,

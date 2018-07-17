@@ -1,7 +1,5 @@
-import { Component, Input, OnInit } from '@angular/core';
-import { CardSchema } from '../cardschema';
+import { Component, Input } from '@angular/core';
 import { ListSchema } from '../listschema';
-import { CardStore } from '../cardstore';
 
 import { CardService } from '../shared/services/card.service';
 
@@ -10,12 +8,13 @@ import { CardService } from '../shared/services/card.service';
     templateUrl: './list.component.html',
     styleUrls: ['./list.component.scss']
 })
-export class ListComponent implements OnInit {
-    @Input() list: ListSchema;
-    @Input() cardStore: CardStore;
+export class ListComponent {
+    @Input() list: ListSchema
+
     displayAddCard = false;
     loading = false;
-    status = false;
+    status = true;
+    clickedCard = '';
 
     constructor(private _card: CardService) { }
 
@@ -23,8 +22,17 @@ export class ListComponent implements OnInit {
         this.displayAddCard = ! this.displayAddCard;
     }
 
-    ngOnInit(): void {
-        console.log(this.list);
+    dragStart(ev) {
+        ev.dataTransfer.setData('card', ev.target.id);
+    }
+
+    checkExists(id) {
+        this.clickedCard = id;
+        this._card.getCard(id).subscribe(() => {
+            this.status = true;
+        }, () => {
+            this.status = false;
+        });
     }
 
     allowDrop($event) {
@@ -45,25 +53,18 @@ export class ListComponent implements OnInit {
         target = target.querySelector('.cards');
         const dragEl = document.getElementById(data);
 
-        if (targetClassName === 'card') {
-            console.log('card');
+        if (targetClassName === 'card' && dragEl) {
             const cardEl = $event.target.parentNode.parentNode;
-            console.log(cardEl);
-            console.log(dragEl);
             if (this.isBefore(dragEl, cardEl)) {
-                console.log('yes');
                 target.insertBefore(dragEl, cardEl);
             } else {
-                console.log('no');
                 target.insertBefore(dragEl, cardEl.nextSibling);
             }
 
         } else if (targetClassName === 'list__title') {
             if (target.children.length) {
-                console.log('first');
                 target.insertBefore(document.getElementById(data), target.children[0]);
             } else {
-                console.log('at the end');
                 target.appendChild(document.getElementById(data));
             }
         } else {
@@ -73,7 +74,6 @@ export class ListComponent implements OnInit {
 
         const status = target.parentNode.children[0].getAttribute('status');
         const description = document.getElementById(data).textContent.trim();
-
         const newData = {
             _id: data,
             status: status,
@@ -82,31 +82,8 @@ export class ListComponent implements OnInit {
         };
 
         const iterateTarget = target.children;
-        console.log(iterateTarget);
-
-        for (let i = 0; i < iterateTarget.length; i++) {
-            console.log(i);
-            newData.sort = i;
-            newData.description = '';
-            if (data === iterateTarget[i].getAttribute('id')) {
-                newData._id = data;
-                newData.status = status;
-                newData.description = description;
-                console.log(newData);
-                // this._card.changeMessage(newData);
-                this._card.updateCard(newData).subscribe(() => {
-                    this.loading = false
-                });
-            } else {
-                newData._id = iterateTarget[i].getAttribute('id');
-                newData.status = this.list.status;
-                newData.description = iterateTarget[i].textContent;
-                console.log(newData);
-                this._card.updateCard(newData).subscribe(() => {
-                    this.loading = false
-                });
-            }
-        }
+        this.reIndexCards(iterateTarget, newData, status, description);
+        this._card.changeMessage(newData);
 
     }
 
@@ -121,32 +98,43 @@ export class ListComponent implements OnInit {
         return false;
     }
 
-    onEnter(value: string) {
+    reIndexCards(html_coll, data, status, description) {
+        for (let i = 0; i < html_coll.length; i++) {
+            data.sort = i;
+            data.description = '';
+            if (data === html_coll[i].getAttribute('id')) {
+                data._id = data;
+                data.status = status;
+                data.description = description;
+                this._card.updateCard(data).subscribe(() => {
+                    this.loading = false
+                });
+            } else {
+                data._id = html_coll[i].getAttribute('id');
+                data.status = this.list.status;
+                data.description = html_coll[i].textContent.trim();
+                this._card.updateCard(data).subscribe(() => {
+                    this.loading = false
+                });
+            }
+        }
+    }
+
+    onEnter(event, value: string) {
         if (value !== '') {
             this.loading = true;
             const data = {
                 status: this.list.status,
                 description: value,
-                sort: 0
+                sort: this.list.cards.length
             };
             this._card.addCard(data).subscribe(response => {
-                this.list.cards.push(response['data']);
-                this.loading = false;
+                if (this.list.status === response['data'].status) {
+                    this.list.cards.push(response['data']);
+                    this.loading = false;
+                }
             });
         }
     }
-
-    dragStart(ev) {
-        ev.dataTransfer.setData('card', ev.target.id);
-    }
-
-    checkExists(id) {
-        this._card.getCard(id).subscribe(() => {
-            this.status = true;
-        }, () => {
-            this.status = false;
-        });
-    }
-
 
 }

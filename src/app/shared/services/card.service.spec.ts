@@ -1,11 +1,12 @@
 import { TestBed, inject } from '@angular/core/testing';
-
+import { HttpClient, HttpHandler } from '@angular/common/http';
 import { CardService } from './card.service';
+import { AppConfig } from '../../app.config';
 
 describe('CardService', () => {
   beforeEach(() => {
     TestBed.configureTestingModule({
-      providers: [CardService]
+      providers: [AppConfig, HttpClient, HttpHandler, CardService]
     });
   });
 

@@ -10,17 +10,18 @@
                   class="d-block"
                   (mousedown)="checkExists(cardId._id)"
                   (dragstart)="status && dragStart($event)"
-                  [attr.data-sort]="index"
                   id="{{cardId._id}}"
-                  [attr.data-sort]="i"
-                  [card]="cardId" [index]="i"></app-card>
+                  [card]="cardId"
+                  [status]="status"
+                  [clickedCard]="cardId._id"
+                  [index]="i"></app-card>
     </div>
 
     <input #addCardInput
            type="text"
            class="mt-2"
            placeholder="Hit enter to save"
-           (keyup.enter)="onEnter(addCardInput.value); addCardInput.value = ''; displayAddCard = false;"
+           (keyup.enter)="onEnter($event, addCardInput.value); addCardInput.value = ''; displayAddCard = false;"
            *ngIf="displayAddCard" autofocus>
 
     <a href="#" class="list__newcard d-inline-block text-right pt-3 pr-1"

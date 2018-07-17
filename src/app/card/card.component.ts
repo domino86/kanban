@@ -1,6 +1,5 @@
 import { Component, Input, OnInit, ElementRef, ViewChild } from '@angular/core';
 import { CardSchema } from '../cardschema';
-
 import { CardService } from '../shared/services/card.service';
 
 @Component({
@@ -10,29 +9,32 @@ import { CardService } from '../shared/services/card.service';
 })
 export class CardComponent implements OnInit {
     @Input() card: CardSchema;
+    @Input() clickedCard: string;
     @Input() index: number;
+    @Input() status = true;
     @ViewChild('editCardInput') cardInput: ElementRef;
     editable = false;
     loading = false;
-    status = true;
+    newData = {};
 
     constructor(private _card: CardService) { }
 
     ngOnInit() {
         this._card.currentMessage.subscribe(newData => {
             if (typeof(newData) !== 'undefined' && this.card._id === newData._id) {
+                this.newData = newData;
                 this.card = newData;
             }
         });
     }
 
     toggleDrag(check: boolean) {
-        this.cardInput.nativeElement.parentNode.parentNode.setAttribute('draggable', check);
+        console.log(this.cardInput.nativeElement.parentNode.parentNode.parentNode);
+        this.cardInput.nativeElement.parentNode.parentNode.parentNode.setAttribute('draggable', check);
     }
 
     editCard(event) {
         event.preventDefault();
-        console.log(event.target);
         this.editable = true;
         this.cardInput.nativeElement.value = this.card.description;
         this.toggleDrag(false);
@@ -65,7 +67,8 @@ export class CardComponent implements OnInit {
             const data = {
                 _id: this.card._id,
                 status: this.card.status,
-                description: value
+                description: value,
+                sort: this.card.sort
             };
 
             this._card.updateCard(data).subscribe(() => {

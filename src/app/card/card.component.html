@@ -13,7 +13,7 @@
                 (click)="deleteCard(card._id)">
             <i class="fa fa-trash-o" aria-hidden="true"></i>
         </button>
-        <p class="alert alert-danger" *ngIf="!status">This element doesn't exists, please refresh site.</p>
+        <p class="alert alert-danger" *ngIf="!status && card._id === clickedCard">This element doesn't exists, please refresh site.</p>
     </div>
 
     <div class="editable">

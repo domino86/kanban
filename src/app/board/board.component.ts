@@ -1,5 +1,4 @@
 import { Component, OnInit } from '@angular/core';
-import { CardStore } from '../cardstore';
 import { ListSchema } from '../listschema';
 
 import { CardService } from '../shared/services/card.service';
@@ -10,7 +9,6 @@ import { CardService } from '../shared/services/card.service';
     styleUrls: ['./board.component.scss']
 })
 export class BoardComponent implements OnInit {
-    cardStore: CardStore;
     lists: ListSchema[];
     ready: boolean;
 
@@ -23,7 +21,6 @@ export class BoardComponent implements OnInit {
     }
 
     setMockData(): void {
-        this.cardStore = new CardStore();
         const lists: ListSchema[] = [
             {
                 name: 'To Do',
@@ -62,6 +59,8 @@ export class BoardComponent implements OnInit {
                     this.ready = true;
                 }
             }
+        }, () => {
+            return false;
         })
     }
 
