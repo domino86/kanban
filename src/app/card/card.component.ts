@@ -26,10 +26,6 @@ export class CardComponent implements OnInit {
         });
     }
 
-    dragStart(ev) {
-        ev.dataTransfer.setData('card', ev.target.id);
-    }
-
     toggleDrag(check: boolean) {
         this.cardInput.nativeElement.parentNode.parentNode.setAttribute('draggable', check);
     }
@@ -61,14 +57,6 @@ export class CardComponent implements OnInit {
             this.toggleDrag(true);
             this.loading = false;
         })
-    }
-
-    checkExists(id) {
-        this._card.getCard(id).subscribe(() => {
-            this.status = true;
-        }, () => {
-            this.status = false;
-        });
     }
 
     onEnter(value: string) {

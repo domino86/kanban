@@ -15,6 +15,7 @@ export class ListComponent implements OnInit {
     @Input() cardStore: CardStore;
     displayAddCard = false;
     loading = false;
+    status = false;
 
     constructor(private _card: CardService) { }
 
@@ -43,20 +44,18 @@ export class ListComponent implements OnInit {
 
         target = target.querySelector('.cards');
         const dragEl = document.getElementById(data);
-        let currentIndex = Number(document.getElementById(data).getAttribute('data-sort'));
 
         if (targetClassName === 'card') {
             console.log('card');
-            console.log($event.target);
+            const cardEl = $event.target.parentNode.parentNode;
+            console.log(cardEl);
             console.log(dragEl);
-            if (this.isBefore(dragEl, $event.target.parentNode)) {
+            if (this.isBefore(dragEl, cardEl)) {
                 console.log('yes');
-                $event.target.parentNode.parentNode.insertBefore(dragEl, $event.target.parentNode);
-                currentIndex += 1;
+                target.insertBefore(dragEl, cardEl);
             } else {
                 console.log('no');
-                $event.target.parentNode.parentNode.insertBefore(dragEl, $event.target.parentNode.nextSibling);
-                currentIndex -= 1;
+                target.insertBefore(dragEl, cardEl.nextSibling);
             }
 
         } else if (targetClassName === 'list__title') {
@@ -79,24 +78,35 @@ export class ListComponent implements OnInit {
             _id: data,
             status: status,
             description: description,
-            sort: currentIndex
+            sort: 0
         };
 
-        // this solution or above?
         const iterateTarget = target.children;
         console.log(iterateTarget);
 
         for (let i = 0; i < iterateTarget.length; i++) {
+            console.log(i);
+            newData.sort = i;
+            newData.description = '';
             if (data === iterateTarget[i].getAttribute('id')) {
-                console.log(i);
-                newData.sort = i;
+                newData._id = data;
+                newData.status = status;
+                newData.description = description;
+                console.log(newData);
+                // this._card.changeMessage(newData);
+                this._card.updateCard(newData).subscribe(() => {
+                    this.loading = false
+                });
+            } else {
+                newData._id = iterateTarget[i].getAttribute('id');
+                newData.status = this.list.status;
+                newData.description = iterateTarget[i].textContent;
+                console.log(newData);
+                this._card.updateCard(newData).subscribe(() => {
+                    this.loading = false
+                });
             }
         }
-
-        this._card.changeMessage(newData);
-        this._card.updateCard(newData).subscribe(response => {
-            this.loading = false
-        });
 
     }
 
@@ -124,6 +134,18 @@ export class ListComponent implements OnInit {
                 this.loading = false;
             });
         }
+    }
+
+    dragStart(ev) {
+        ev.dataTransfer.setData('card', ev.target.id);
+    }
+
+    checkExists(id) {
+        this._card.getCard(id).subscribe(() => {
+            this.status = true;
+        }, () => {
+            this.status = false;
+        });
     }
 
 
